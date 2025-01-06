@@ -1,0 +1,49 @@
+.basic-info-form {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+  }
+  
+  .basic-info-form h1 {
+    text-align: center;
+  }
+  
+  .basic-info-form input,
+  .dropdown select {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .dropdown {
+    margin: 10px 0;
+  }
+  
+  .date-picker {
+    margin: 10px 0;
+  }
+  
+  .date-picker label,
+  .dropdown label {
+    font-weight: bold;
+  }
+  
+  button {
+    width: 100%;
+    padding: 10px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #45a049;
+  }
+  

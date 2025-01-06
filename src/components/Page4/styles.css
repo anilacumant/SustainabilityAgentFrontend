@@ -1,0 +1,55 @@
+/* General styles for Page 4 */
+
+.emission-summary {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+  }
+  
+  h1,
+  h2 {
+    text-align: center;
+    color: #333;
+  }
+  
+  .loading,
+  .error {
+    text-align: center;
+    color: #f44336;
+    font-size: 1.2rem;
+  }
+  
+  .summary-details {
+    margin-top: 20px;
+  }
+  
+  .summary-details h2 {
+    color: #4caf50;
+  }
+  
+  .summary-details table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  
+  .summary-details th,
+  .summary-details td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+  }
+  
+  .summary-details th {
+    background-color: #4caf50;
+    color: white;
+  }
+  
+  .emission-flow-chart {
+    margin: 20px 0;
+  }
+  

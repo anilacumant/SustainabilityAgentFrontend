@@ -1,0 +1,67 @@
+/* General styles for StationaryCombustion components */
+.stationary-form {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+  }
+  
+  h1,
+  h2,
+  h3 {
+    text-align: center;
+    color: #333;
+  }
+  
+  .stationary-description {
+    margin-bottom: 20px;
+  }
+  
+  .fuel-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .fuel-option {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .add-other-fuel {
+    margin: 20px 0;
+  }
+  
+  .add-other-fuel input {
+    padding: 5px;
+    margin-right: 10px;
+  }
+  
+  .stationary-table table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .stationary-table th,
+  .stationary-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+  }
+  
+  .stationary-table th {
+    background-color: #4caf50;
+    color: white;
+  }
+  
+  .stationary-table input,
+  .stationary-table select {
+    width: 90%;
+    padding: 5px;
+  }
+  

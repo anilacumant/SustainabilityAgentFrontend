@@ -1,0 +1,80 @@
+/* ScopeSelection styles */
+.scope-selection {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 25px;
+    background-color: #e6f7ff;
+    border-radius: 12px;
+    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.1);
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .scope-selection h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+  }
+  
+  .scope-item {
+    margin-bottom: 20px;
+    padding: 18px;
+    background: #ffffff;
+    border: 1px solid #cce7ff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+  
+  .next-button {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background-color: #1e88e5;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .next-button:hover {
+    background-color: #1565c0;
+  }
+  
+  /* ScopeDescription styles */
+  .scope-description {
+    margin-bottom: 15px;
+  }
+  
+  .scope-description h2 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: #1e88e5;
+  }
+  
+  .scope-description p {
+    margin: 5px 0 0 0;
+    color: #666;
+    font-size: 1rem;
+  }
+  
+  /* RadioButtonGroup styles */
+  .radio-group {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+  }
+  
+  .radio-option {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    color: #333;
+  }
+  
+  .radio-option input {
+    margin-right: 8px;
+  }
+  
