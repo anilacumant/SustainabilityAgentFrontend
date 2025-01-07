@@ -1,16 +1,16 @@
+/* ChatModal Component with Positioning and CSS Adjustments */
 import React, { useState } from "react";
-import "./ChatModal.css"; // Import ChatModal styles
+import "./ChatModal.css";
 
-const ChatModal = ({ onClose }) => {
+const ChatModal = ({ onClose, position }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
 
-  // Corrected handleSendMessage function
   const handleSendMessage = async () => {
-    if (!input.trim()) return; // Prevent sending empty messages
+    if (!input.trim()) return;
 
-    // Add user message to the chat
-    setMessages((prevMessages) => [...prevMessages, { sender: "user", text: input }]);
+    setMessages([...messages, { sender: "user", text: input }]);
+    setInput("");
 
     try {
       const response = await fetch("http://localhost:5000/api/chat", {
@@ -24,22 +24,24 @@ const ChatModal = ({ onClose }) => {
       const data = await response.json();
 
       if (data.reply) {
-        // Add AI response to the chat
-        setMessages((prevMessages) => [...prevMessages, { sender: "ai", text: data.reply }]);
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { sender: "ai", text: data.reply },
+        ]);
       }
     } catch (error) {
       console.error("Error in chat:", error);
-      setMessages((prevMessages) => [...prevMessages, { sender: "ai", text: "Something went wrong, please try again later." }]);
     }
-
-    setInput(""); // Clear input field
   };
 
   return (
-    <div className="chat-modal">
+    <div
+      className={`chat-modal ${position}`}
+      style={{ position: "fixed", bottom: "60px", right: "20px" }}
+    >
       <div className="chat-header">
         <h2>Chat with AI</h2>
-        <button onClick={onClose}>Close</button>
+        <button className="close-button" onClick={onClose}>✖</button>
       </div>
       <div className="chat-body">
         {messages.map((msg, index) => (
@@ -49,13 +51,13 @@ const ChatModal = ({ onClose }) => {
         ))}
       </div>
       <div className="chat-footer">
-        <input
-          type="text"
+        <textarea
+          className="chat-input"
           placeholder="Type your message..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
         />
-        <button onClick={handleSendMessage}>Send</button>
+        <button className="send-button" onClick={handleSendMessage}>➤</button>
       </div>
     </div>
   );
