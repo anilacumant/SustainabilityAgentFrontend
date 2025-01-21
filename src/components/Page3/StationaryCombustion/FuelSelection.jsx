@@ -22,15 +22,44 @@ const FuelSelection = () => {
   const [selectedFuels, setSelectedFuels] = useState([]);
   const [emissionData, setEmissionData] = useState({});
   const [error, setError] = useState(null);
+  const [customFuel, setCustomFuel] = useState("");
 
   // Handle fuel selection
   const handleFuelSelect = (fuelType) => {
     if (!selectedFuels.includes(fuelType)) {
       setSelectedFuels([...selectedFuels, fuelType]);
+      fetchFuelData(fuelType);
     }
   };
 
-  // Handle user input for values
+  // Handle fetching description and emission factor
+  const fetchFuelData = async (fuelType) => {
+    try {
+      const response = await axios.post("http://localhost:5000/api/get-fuel-data", { fuel_type: fuelType });
+      setEmissionData((prev) => ({
+        ...prev,
+        [fuelType]: {
+          description: response.data.description,
+          emissionFactor: response.data.emission_factor,
+          uom: response.data.uom || "Unknown",
+        },
+      }));
+    } catch (error) {
+      console.error("Error fetching fuel data:", error);
+      setError(`Error fetching fuel data for ${fuelType}`);
+    }
+  };
+
+  // Handle custom fuel input
+  const handleAddCustomFuel = () => {
+    if (customFuel && !fuelTypes.includes(customFuel)) {
+      setFuelTypes([...fuelTypes, customFuel]);
+      fetchFuelData(customFuel);
+      setCustomFuel("");
+    }
+  };
+
+  // Handle input changes for the table
   const handleInputChange = (fuelType, field, value) => {
     setEmissionData((prev) => ({
       ...prev,
@@ -39,23 +68,6 @@ const FuelSelection = () => {
         [field]: value,
       },
     }));
-  };
-
-  // Fetch emission factor from the backend
-  const fetchEmissionFactor = async (fuelType) => {
-    try {
-      const response = await axios.post("http://localhost:5000/api/get-emission-factor", { fuel_type: fuelType });
-      setEmissionData((prev) => ({
-        ...prev,
-        [fuelType]: {
-          ...prev[fuelType],
-          emissionFactor: response.data.emission_factor,
-        },
-      }));
-    } catch (error) {
-      console.error("Error fetching emission factor:", error);
-      setError(`Error fetching emission factor for ${fuelType}`);
-    }
   };
 
   // Calculate emissions
@@ -73,29 +85,55 @@ const FuelSelection = () => {
       <table>
         <thead>
           <tr>
+            <th>Select</th>
             <th>Fuel Type</th>
             <th>Description</th>
           </tr>
         </thead>
         <tbody>
           {fuelTypes.map((fuelType) => (
-            <tr key={fuelType} onClick={() => handleFuelSelect(fuelType)}>
+            <tr key={fuelType}>
+              <td>
+                <input
+                  type="checkbox"
+                  onChange={() => handleFuelSelect(fuelType)}
+                  checked={selectedFuels.includes(fuelType)}
+                />
+              </td>
               <td>{fuelType}</td>
-              <td>{selectedFuels.includes(fuelType) ? "Selected" : "Click to Select"}</td>
+              <td>
+                {emissionData[fuelType]?.description || (
+                  <button onClick={() => fetchFuelData(fuelType)}>Show Description</button>
+                )}
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
 
+      <div className="custom-fuel">
+        <h2>Add Custom Fuel</h2>
+        <input
+          type="text"
+          value={customFuel}
+          onChange={(e) => setCustomFuel(e.target.value)}
+          placeholder="Enter custom fuel type"
+        />
+        <button onClick={handleAddCustomFuel}>Add Fuel</button>
+      </div>
+
       {selectedFuels.length > 0 && (
         <div className="emission-calculation">
-          <h2>Emission Calculation</h2>
+          <h2>Based on Chosen Items</h2>
           <table>
             <thead>
               <tr>
                 <th>Fuel Type</th>
-                <th>Value (User Input)</th>
+                <th>Data Available?</th>
                 <th>UoM</th>
+                <th>Value (User Input)</th>
+                <th>Actual/Estimated</th>
+                <th>Attachment</th>
                 <th>Emission Factor</th>
                 <th>Emissions</th>
               </tr>
@@ -105,6 +143,15 @@ const FuelSelection = () => {
                 <tr key={fuelType}>
                   <td>{fuelType}</td>
                   <td>
+                    <select
+                      onChange={(e) => handleInputChange(fuelType, "dataAvailable", e.target.value)}
+                    >
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </td>
+                  <td>{emissionData[fuelType]?.uom || "Loading..."}</td>
+                  <td>
                     <input
                       type="number"
                       placeholder="Enter value"
@@ -112,17 +159,20 @@ const FuelSelection = () => {
                     />
                   </td>
                   <td>
-                    <select onChange={(e) => handleInputChange(fuelType, "uom", e.target.value)}>
-                      <option value="liters">Liters</option>
-                      <option value="cubic meters">Cubic Meters</option>
-                      <option value="kWh">kWh</option>
+                    <select
+                      onChange={(e) => handleInputChange(fuelType, "actualEstimated", e.target.value)}
+                    >
+                      <option value="Actual">Actual</option>
+                      <option value="Estimated">Estimated</option>
                     </select>
                   </td>
                   <td>
-                    {emissionData[fuelType]?.emissionFactor || (
-                      <button onClick={() => fetchEmissionFactor(fuelType)}>Fetch Factor</button>
-                    )}
+                    <input
+                      type="file"
+                      onChange={(e) => handleInputChange(fuelType, "attachment", e.target.files[0])}
+                    />
                   </td>
+                  <td>{emissionData[fuelType]?.emissionFactor || "Fetching..."}</td>
                   <td>{calculateEmissions(fuelType)}</td>
                 </tr>
               ))}
