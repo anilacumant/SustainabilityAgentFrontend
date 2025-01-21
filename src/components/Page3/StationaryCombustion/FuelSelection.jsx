@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { FaLightbulb } from "react-icons/fa"; // Light Bulb Icon for Description Toggle
 import "./FuelSelection.css";
 
 const FuelSelection = () => {
@@ -21,14 +22,15 @@ const FuelSelection = () => {
   ]);
   const [selectedFuels, setSelectedFuels] = useState([]);
   const [emissionData, setEmissionData] = useState({});
-  const [error, setError] = useState(null);
   const [customFuel, setCustomFuel] = useState("");
+  const [showDescription, setShowDescription] = useState({}); // Toggles for descriptions
+  const [error, setError] = useState(null); // Error handling
 
   // Handle fuel selection
   const handleFuelSelect = (fuelType) => {
     if (!selectedFuels.includes(fuelType)) {
       setSelectedFuels([...selectedFuels, fuelType]);
-      fetchFuelData(fuelType);
+      fetchFuelData(fuelType); // Fetch data for the selected fuel
     }
   };
 
@@ -50,7 +52,7 @@ const FuelSelection = () => {
     }
   };
 
-  // Handle custom fuel input
+  // Handle adding custom fuel
   const handleAddCustomFuel = () => {
     if (customFuel && !fuelTypes.includes(customFuel)) {
       setFuelTypes([...fuelTypes, customFuel]);
@@ -59,15 +61,29 @@ const FuelSelection = () => {
     }
   };
 
-  // Handle input changes for the table
-  const handleInputChange = (fuelType, field, value) => {
-    setEmissionData((prev) => ({
+  // Toggle description visibility
+  const toggleDescription = (fuelType) => {
+    if (!emissionData[fuelType]) {
+      // If data isn't loaded, fetch it first
+      fetchFuelData(fuelType);
+    }
+    setShowDescription((prev) => ({
       ...prev,
-      [fuelType]: {
-        ...prev[fuelType],
-        [field]: value,
-      },
+      [fuelType]: !prev[fuelType], // Toggle the visibility
     }));
+  };
+
+  // Render description dynamically
+  const renderDescription = (fuelType) => {
+    const fuelData = emissionData[fuelType];
+    if (fuelData && showDescription[fuelType]) {
+      return (
+        <p className="description">
+          {fuelData.description || "No description available."}
+        </p>
+      );
+    }
+    return null;
   };
 
   // Calculate emissions
@@ -79,6 +95,17 @@ const FuelSelection = () => {
     return "N/A";
   };
 
+  // Handle user input changes
+  const handleInputChange = (fuelType, field, value) => {
+    setEmissionData((prev) => ({
+      ...prev,
+      [fuelType]: {
+        ...prev[fuelType],
+        [field]: value,
+      },
+    }));
+  };
+
   return (
     <div className="fuel-selection">
       <h1>Fuel Selection</h1>
@@ -86,13 +113,17 @@ const FuelSelection = () => {
       {/* Add Custom Fuel Section */}
       <div className="custom-fuel">
         <h2>Add Custom Fuel</h2>
-        <input
-          type="text"
-          value={customFuel}
-          onChange={(e) => setCustomFuel(e.target.value)}
-          placeholder="Enter custom fuel type"
-        />
-        <button onClick={handleAddCustomFuel}>Add Fuel</button>
+        <div className="custom-fuel-container">
+          <input
+            type="text"
+            value={customFuel}
+            onChange={(e) => setCustomFuel(e.target.value)}
+            placeholder="Enter custom fuel type"
+          />
+          <button onClick={handleAddCustomFuel} className="add-fuel-btn">
+            Add
+          </button>
+        </div>
       </div>
 
       {/* Based on Chosen Items Section */}
@@ -176,9 +207,11 @@ const FuelSelection = () => {
               </td>
               <td>{fuelType}</td>
               <td>
-                {emissionData[fuelType]?.description || (
-                  <button onClick={() => fetchFuelData(fuelType)}>Show Description</button>
-                )}
+                <FaLightbulb
+                  onClick={() => toggleDescription(fuelType)}
+                  className="lightbulb-icon"
+                />
+                {renderDescription(fuelType)}
               </td>
             </tr>
           ))}
