@@ -112,19 +112,21 @@ const FuelSelection = () => {
 
       {/* Add Custom Fuel Section */}
       <div className="custom-fuel">
-        <h2>Add Custom Fuel</h2>
-        <div className="custom-fuel-container">
-          <input
-            type="text"
-            value={customFuel}
-            onChange={(e) => setCustomFuel(e.target.value)}
-            placeholder="Enter custom fuel type"
-          />
-          <button onClick={handleAddCustomFuel} className="add-fuel-btn">
-            Add
-          </button>
-        </div>
-      </div>
+  <h2>Add Custom Fuel</h2>
+  <div className="custom-fuel-container">
+    <input
+      type="text"
+      value={customFuel}
+      onChange={(e) => setCustomFuel(e.target.value)}
+      placeholder="Enter custom fuel type"
+      className="custom-fuel-input"
+    />
+    <button onClick={handleAddCustomFuel} className="custom-fuel-btn">
+      Add
+    </button>
+  </div>
+</div>
+
 
       {/* Based on Chosen Items Section */}
       {selectedFuels.length > 0 && (
@@ -144,44 +146,55 @@ const FuelSelection = () => {
               </tr>
             </thead>
             <tbody>
-              {selectedFuels.map((fuelType) => (
-                <tr key={fuelType}>
-                  <td>{fuelType}</td>
-                  <td>
-                    <select
-                      onChange={(e) => handleInputChange(fuelType, "dataAvailable", e.target.value)}
-                    >
-                      <option value="Yes">Yes</option>
-                      <option value="No">No</option>
-                    </select>
-                  </td>
-                  <td>{emissionData[fuelType]?.uom || "Loading..."}</td>
-                  <td>
-                    <input
-                      type="number"
-                      placeholder="Enter value"
-                      onChange={(e) => handleInputChange(fuelType, "value", parseFloat(e.target.value))}
-                    />
-                  </td>
-                  <td>
-                    <select
-                      onChange={(e) => handleInputChange(fuelType, "actualEstimated", e.target.value)}
-                    >
-                      <option value="Actual">Actual</option>
-                      <option value="Estimated">Estimated</option>
-                    </select>
-                  </td>
-                  <td>
-                    <input
-                      type="file"
-                      onChange={(e) => handleInputChange(fuelType, "attachment", e.target.files[0])}
-                    />
-                  </td>
-                  <td>{emissionData[fuelType]?.emissionFactor || "Fetching..."}</td>
-                  <td>{calculateEmissions(fuelType)}</td>
-                </tr>
-              ))}
-            </tbody>
+  {selectedFuels.map((fuelType) => (
+    <tr key={fuelType}>
+      <td>{fuelType}</td>
+      <td>
+        <select
+          onChange={(e) => handleInputChange(fuelType, "dataAvailable", e.target.value)}
+          className="dropdown"
+        >
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </td>
+      <td>{emissionData[fuelType]?.uom || "Loading..."}</td>
+      <td>
+        <input
+          type="number"
+          placeholder="Enter value"
+          onChange={(e) => handleInputChange(fuelType, "value", parseFloat(e.target.value))}
+          className="input-field"
+        />
+      </td>
+      <td>
+        <select
+          onChange={(e) => handleInputChange(fuelType, "actualEstimated", e.target.value)}
+          className="dropdown"
+        >
+          <option value="Actual">Actual</option>
+          <option value="Estimated">Estimated</option>
+        </select>
+      </td>
+      <td>
+        <div className="file-upload">
+          <label htmlFor={`file-${fuelType}`} className="file-upload-label">
+            Choose File
+          </label>
+          <input
+            id={`file-${fuelType}`}
+            type="file"
+            className="file-upload-input"
+            onChange={(e) => handleInputChange(fuelType, "attachment", e.target.files[0])}
+          />
+        </div>
+      </td>
+      <td>{emissionData[fuelType]?.emissionFactor || "Fetching..."}</td>
+      <td>{calculateEmissions(fuelType)}</td>
+    </tr>
+  ))}
+</tbody>
+
           </table>
         </div>
       )}
