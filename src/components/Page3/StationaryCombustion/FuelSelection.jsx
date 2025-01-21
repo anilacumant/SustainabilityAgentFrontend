@@ -82,35 +82,8 @@ const FuelSelection = () => {
   return (
     <div className="fuel-selection">
       <h1>Fuel Selection</h1>
-      <table>
-        <thead>
-          <tr>
-            <th>Select</th>
-            <th>Fuel Type</th>
-            <th>Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          {fuelTypes.map((fuelType) => (
-            <tr key={fuelType}>
-              <td>
-                <input
-                  type="checkbox"
-                  onChange={() => handleFuelSelect(fuelType)}
-                  checked={selectedFuels.includes(fuelType)}
-                />
-              </td>
-              <td>{fuelType}</td>
-              <td>
-                {emissionData[fuelType]?.description || (
-                  <button onClick={() => fetchFuelData(fuelType)}>Show Description</button>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
 
+      {/* Add Custom Fuel Section */}
       <div className="custom-fuel">
         <h2>Add Custom Fuel</h2>
         <input
@@ -122,6 +95,7 @@ const FuelSelection = () => {
         <button onClick={handleAddCustomFuel}>Add Fuel</button>
       </div>
 
+      {/* Based on Chosen Items Section */}
       {selectedFuels.length > 0 && (
         <div className="emission-calculation">
           <h2>Based on Chosen Items</h2>
@@ -180,6 +154,36 @@ const FuelSelection = () => {
           </table>
         </div>
       )}
+
+      {/* Fuel Selection Table */}
+      <table>
+        <thead>
+          <tr>
+            <th>Select</th>
+            <th>Fuel Type</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          {fuelTypes.map((fuelType) => (
+            <tr key={fuelType}>
+              <td>
+                <input
+                  type="checkbox"
+                  onChange={() => handleFuelSelect(fuelType)}
+                  checked={selectedFuels.includes(fuelType)}
+                />
+              </td>
+              <td>{fuelType}</td>
+              <td>
+                {emissionData[fuelType]?.description || (
+                  <button onClick={() => fetchFuelData(fuelType)}>Show Description</button>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
