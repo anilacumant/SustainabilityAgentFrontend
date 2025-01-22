@@ -1,33 +1,68 @@
 /* Styles for Landing Page */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', Arial, sans-serif;
+}
 
 .landing-page {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    background: linear-gradient(135deg, #4caf50, #81c784);
-    color: white;
-    text-align: center;
-    font-family: Arial, sans-serif;
-    cursor: pointer;
-  }
-  
-  .landing-page .content {
-    max-width: 600px;
-    padding: 20px;
-    border: 2px solid white;
-    border-radius: 10px;
-    background-color: rgba(0, 0, 0, 0.5);
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-  }
-  
-  .landing-page h1 {
-    font-size: 2.5rem;
-    margin-bottom: 10px;
-  }
-  
-  .landing-page p {
-    font-size: 1.2rem;
-    margin-top: 0;
-  }
-  
+  display: flex;
+  height: 100vh;
+  overflow: hidden; /* Ensures no scrollbars appear */
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px;
+  background: linear-gradient(135deg, #4caf50, #81c784);
+  color: white;
+  text-align: left;
+}
+
+.content h1 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  color: #f1f1f1;
+}
+
+.content p {
+  font-size: 1.4rem;
+  margin-bottom: 20px;
+  line-height: 1.6;
+  font-style: italic;
+  color: #d1ffd1;
+}
+
+.start-button {
+  padding: 15px 30px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.start-button:hover {
+  background-color: #81c784;
+  box-shadow: 0px 0px 15px 5px rgba(255, 255, 255, 0.6);
+}
+
+.image-section {
+  flex: 1;
+  display: flex;
+}
+
+.image-section img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensures the image covers the space completely */
+  border: none; /* Removes spacing around the image */
+}

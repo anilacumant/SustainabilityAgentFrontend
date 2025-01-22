@@ -183,3 +183,102 @@
 .custom-fuel-btn:active {
   background-color: #1e7e34; /* Even darker green on click */
 }
+
+/* Fuel Selection Container */
+.fuel-selection-container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 30px auto;
+  background-color: #ffffff; /* White background for a clean look */
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+/* Section Titles */
+.fuel-selection-title {
+  text-align: center;
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.custom-fuel-section h2,
+.based-on-items-section h2 {
+  font-size: 1.5rem;
+  color: #333;
+  border-bottom: 2px solid #43a047;
+  padding-bottom: 5px;
+  margin-bottom: 15px;
+}
+
+/* Table Styles */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+table th,
+table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+  font-size: 14px;
+}
+
+table th {
+  background-color: #43a047;
+  color: white;
+  text-transform: uppercase;
+}
+
+table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+table tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* Custom Fuel Input and Button */
+.custom-fuel-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.custom-fuel-input {
+  flex: 1;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+}
+
+.custom-fuel-btn {
+  padding: 10px 20px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.custom-fuel-btn:hover {
+  background-color: #218838;
+}
+
+/* Lightbulb Icon */
+.lightbulb-icon {
+  color: #f0ad4e;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.lightbulb-icon:hover {
+  color: #d9534f;
+}

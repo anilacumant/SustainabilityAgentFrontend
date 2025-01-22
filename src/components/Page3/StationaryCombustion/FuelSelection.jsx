@@ -107,130 +107,138 @@ const FuelSelection = () => {
   };
 
   return (
-    <div className="fuel-selection">
-      <h1>Fuel Selection</h1>
+    <div className="fuel-selection-container">
+  <h1 className="fuel-selection-title">Fuel Selection</h1>
 
-      {/* Add Custom Fuel Section */}
-      <div className="custom-fuel">
-  <h2>Add Custom Fuel</h2>
-  <div className="custom-fuel-container">
-    <input
-      type="text"
-      value={customFuel}
-      onChange={(e) => setCustomFuel(e.target.value)}
-      placeholder="Enter custom fuel type"
-      className="custom-fuel-input"
-    />
-    <button onClick={handleAddCustomFuel} className="custom-fuel-btn">
-      Add
-    </button>
+  {/* Add Custom Fuel Section */}
+  <div className="custom-fuel-section">
+    <h2>Add Custom Fuel</h2>
+    <div className="custom-fuel-container">
+      <input
+        type="text"
+        value={customFuel}
+        onChange={(e) => setCustomFuel(e.target.value)}
+        placeholder="Enter custom fuel type"
+        className="custom-fuel-input"
+      />
+      <button onClick={handleAddCustomFuel} className="custom-fuel-btn">
+        Add
+      </button>
+    </div>
   </div>
-</div>
 
-
-      {/* Based on Chosen Items Section */}
-      {selectedFuels.length > 0 && (
-        <div className="emission-calculation">
-          <h2>Based on Chosen Items</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Fuel Type</th>
-                <th>Data Available?</th>
-                <th>UoM</th>
-                <th>Value (User Input)</th>
-                <th>Actual/Estimated</th>
-                <th>Attachment</th>
-                <th>Emission Factor</th>
-                <th>Emissions</th>
-              </tr>
-            </thead>
-            <tbody>
-  {selectedFuels.map((fuelType) => (
-    <tr key={fuelType}>
-      <td>{fuelType}</td>
-      <td>
-        <select
-          onChange={(e) => handleInputChange(fuelType, "dataAvailable", e.target.value)}
-          className="dropdown"
-        >
-          <option value="Yes">Yes</option>
-          <option value="No">No</option>
-        </select>
-      </td>
-      <td>{emissionData[fuelType]?.uom || "Loading..."}</td>
-      <td>
-        <input
-          type="number"
-          placeholder="Enter value"
-          onChange={(e) => handleInputChange(fuelType, "value", parseFloat(e.target.value))}
-          className="input-field"
-        />
-      </td>
-      <td>
-        <select
-          onChange={(e) => handleInputChange(fuelType, "actualEstimated", e.target.value)}
-          className="dropdown"
-        >
-          <option value="Actual">Actual</option>
-          <option value="Estimated">Estimated</option>
-        </select>
-      </td>
-      <td>
-        <div className="file-upload">
-          <label htmlFor={`file-${fuelType}`} className="file-upload-label">
-            Choose File
-          </label>
-          <input
-            id={`file-${fuelType}`}
-            type="file"
-            className="file-upload-input"
-            onChange={(e) => handleInputChange(fuelType, "attachment", e.target.files[0])}
-          />
-        </div>
-      </td>
-      <td>{emissionData[fuelType]?.emissionFactor || "Fetching..."}</td>
-      <td>{calculateEmissions(fuelType)}</td>
-    </tr>
-  ))}
-</tbody>
-
-          </table>
-        </div>
-      )}
-
-      {/* Fuel Selection Table */}
-      <table>
+  {/* Based on Chosen Items Section */}
+  {selectedFuels.length > 0 && (
+    <div className="based-on-items-section">
+      <h2>Based on Chosen Items</h2>
+      <table className="based-on-items-table">
         <thead>
           <tr>
-            <th>Select</th>
             <th>Fuel Type</th>
-            <th>Description</th>
+            <th>Data Available?</th>
+            <th>UoM</th>
+            <th>Value (User Input)</th>
+            <th>Actual/Estimated</th>
+            <th>Attachment</th>
+            <th>Emission Factor</th>
+            <th>Emissions</th>
           </tr>
         </thead>
         <tbody>
-          {fuelTypes.map((fuelType) => (
+          {selectedFuels.map((fuelType) => (
             <tr key={fuelType}>
-              <td>
-                <input
-                  type="checkbox"
-                  onChange={() => handleFuelSelect(fuelType)}
-                  checked={selectedFuels.includes(fuelType)}
-                />
-              </td>
               <td>{fuelType}</td>
               <td>
-                <FaLightbulb
-                  onClick={() => toggleDescription(fuelType)}
-                  className="lightbulb-icon"
-                />
-                {renderDescription(fuelType)}
+                <select
+                  onChange={(e) =>
+                    handleInputChange(fuelType, "dataAvailable", e.target.value)
+                  }
+                  className="dropdown"
+                >
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
               </td>
+              <td>{emissionData[fuelType]?.uom || "Loading..."}</td>
+              <td>
+                <input
+                  type="number"
+                  placeholder="Enter value"
+                  onChange={(e) =>
+                    handleInputChange(fuelType, "value", parseFloat(e.target.value))
+                  }
+                  className="input-field"
+                />
+              </td>
+              <td>
+                <select
+                  onChange={(e) =>
+                    handleInputChange(fuelType, "actualEstimated", e.target.value)
+                  }
+                  className="dropdown"
+                >
+                  <option value="Actual">Actual</option>
+                  <option value="Estimated">Estimated</option>
+                </select>
+              </td>
+              <td>
+                <div className="file-upload">
+                  <label htmlFor={`file-${fuelType}`} className="file-upload-label">
+                    Choose File
+                  </label>
+                  <input
+                    id={`file-${fuelType}`}
+                    type="file"
+                    className="file-upload-input"
+                    onChange={(e) =>
+                      handleInputChange(fuelType, "attachment", e.target.files[0])
+                    }
+                  />
+                </div>
+              </td>
+              <td>{emissionData[fuelType]?.emissionFactor || "Fetching..."}</td>
+              <td>{calculateEmissions(fuelType)}</td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
+  )}
+
+  {/* Fuel Selection Table */}
+  <div className="fuel-selection-table-section">
+    <table className="fuel-selection-table">
+      <thead>
+        <tr>
+          <th>Select</th>
+          <th>Fuel Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        {fuelTypes.map((fuelType) => (
+          <tr key={fuelType}>
+            <td>
+              <input
+                type="checkbox"
+                onChange={() => handleFuelSelect(fuelType)}
+                checked={selectedFuels.includes(fuelType)}
+              />
+            </td>
+            <td>{fuelType}</td>
+            <td>
+              <FaLightbulb
+                onClick={() => toggleDescription(fuelType)}
+                className="lightbulb-icon"
+              />
+              {renderDescription(fuelType)}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</div>
   );
 };
 
