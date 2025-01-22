@@ -1,106 +1,111 @@
+/* General body styles */
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Poppins', Arial, sans-serif;
   margin: 0;
   padding: 0;
-  background: linear-gradient(to right, #d9f9d9, #e6e6e6);
+  background: linear-gradient(to right, #dfffe0, #e3f5fc);
   color: #333;
 }
 
+/* Form container styling */
 .form-container {
-  max-width: 90%;
-  margin: 20px auto; /* Reduced vertical space */
+  width: 85%;
+  max-width: 1400px;
+  margin: 30px auto;
   background: #fff;
-  padding: 20px 30px;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 30px 50px;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
 }
 
+/* Title styling */
 h1 {
   text-align: center;
+  font-size: 2rem;
   color: #4caf50;
-  margin-bottom: 10px; /* Reduced spacing below the title */
+  margin-bottom: 30px;
+  font-weight: bold;
 }
 
+/* Form layout */
 .basic-info-form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px; /* Reduced gap between sections */
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Two-column layout */
+  gap: 20px; /* Spacing between fields */
 }
 
-.form-grid {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
+/* Full-width row for specific fields */
+.full-width {
+  grid-column: span 2;
 }
 
-.form-column {
-  flex: 1;
+/* Inline row for dates */
+.inline-group {
   display: flex;
-  flex-direction: column;
-  gap: 10px; /* Reduced gap between form groups */
+  gap: 20px; /* Add spacing between the date fields */
+  align-items: center;
+  width: 100%;
 }
 
+/* Input group */
 .form-group {
   display: flex;
   flex-direction: column;
 }
 
 label {
+  font-size: 1rem;
   font-weight: bold;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
+  color: #4caf50;
 }
 
-input, select {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+/* Input and dropdown styling */
+input,
+select {
+  padding: 14px 16px;
+  font-size: 1rem;
+  border: 1.5px solid #ccc;
+  border-radius: 8px;
+  background: #f9f9f9;
+  transition: all 0.3s ease;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
+input:focus,
+select:focus {
+  border-color: #4caf50;
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.4);
+  outline: none;
+}
+
+/* Button styling */
 button.submit-button {
+  width: 100%;
   padding: 15px;
-  background-color: #4caf50;
+  background: #4caf50;
   color: white;
   border: none;
   border-radius: 8px;
+  font-size: 1.2rem;
+  font-weight: bold;
   cursor: pointer;
-  font-size: 16px;
   transition: all 0.3s ease;
+  grid-column: span 2;
 }
 
 button.submit-button:hover {
-  background-color: #45a049;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  background: #388e3c;
+  box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
 }
 
-.form-dates {
-  display: flex;
-  gap: 20px;
-}
-
-.date-picker {
-  flex: 1;
-}
-
-/* Adjust bottom spacing */
-body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-footer {
-  margin-top: auto;
-  padding: 10px 0;
-  text-align: center;
-  font-size: 14px;
-}
-
+/* Responsive styles */
 @media (max-width: 768px) {
-  .form-grid {
-    flex-direction: column;
+  .basic-info-form {
+    grid-template-columns: 1fr;
   }
 
-  .form-column {
-    width: 100%;
+  .inline-group {
+    flex-direction: column; /* Stack the date fields on smaller screens */
   }
 }

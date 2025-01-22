@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Dropdown from "./Dropdown";
-import DatePicker from "./DatePicker";
 import "./styles.css";
 
 const BasicInfoForm = () => {
@@ -31,106 +29,121 @@ const BasicInfoForm = () => {
     <div className="form-container">
       <h1>Basic Information</h1>
       <form className="basic-info-form" onSubmit={handleSubmit}>
-        <div className="form-grid">
-          {/* Left Column */}
-          <div className="form-column">
-            <div className="form-group">
-              <label>Company Name</label>
-              <input
-                type="text"
-                placeholder="Company Name"
-                value={formData.companyName}
-                onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
-              />
-            </div>
-            <div className="form-group">
-              <Dropdown
-                label="Sector"
-                options={["Technology", "Finance", "Energy"]}
-                value={formData.sector}
-                onChange={(value) => setFormData({ ...formData, sector: value })}
-              />
-            </div>
-            <div className="form-group">
-              <label>Name</label>
-              <input
-                type="text"
-                placeholder="Name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              />
-            </div>
-            <div className="form-group">
-              <label>Department</label>
-              <Dropdown
-                label="Department"
-                options={["HR", "Engineering", "Sales"]}
-                value={formData.department}
-                onChange={(value) => setFormData({ ...formData, department: value })}
-              />
-            </div>
-          </div>
-
-          {/* Right Column */}
-          <div className="form-column">
-            <div className="form-group">
-              <label>Job Title</label>
-              <input
-                type="text"
-                placeholder="Job Title"
-                value={formData.jobTitle}
-                onChange={(e) => setFormData({ ...formData, jobTitle: e.target.value })}
-              />
-            </div>
-            <div className="form-group">
-              <label>Email</label>
-              <input
-                type="email"
-                placeholder="Email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              />
-            </div>
-            <div className="form-group">
-              <label>Phone Number</label>
-              <input
-                type="tel"
-                placeholder="Phone Number"
-                value={formData.phoneNumber}
-                onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-              />
-            </div>
-            <div className="form-group">
-              <label>Country</label>
-              <Dropdown
-                label="Country"
-                options={countries}
-                value={formData.officeLocation}
-                onChange={(value) => setFormData({ ...formData, officeLocation: value })}
-              />
-            </div>
-          </div>
+        {/* Row 1: Company Name and Sector */}
+        <div className="form-group">
+          <label>Company Name</label>
+          <input
+            type="text"
+            placeholder="Enter Company Name"
+            value={formData.companyName}
+            onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+          />
+        </div>
+        <div className="form-group">
+          <label>Sector</label>
+          <select
+            value={formData.sector}
+            onChange={(e) => setFormData({ ...formData, sector: e.target.value })}
+          >
+            <option value="">Select Sector</option>
+            <option value="Technology">Technology</option>
+            <option value="Finance">Finance</option>
+            <option value="Energy">Energy</option>
+          </select>
         </div>
 
-        {/* Full-width Section */}
-        <div className="form-dates">
+        {/* Row 2: Name and Job Title */}
+        <div className="form-group">
+          <label>Name</label>
+          <input
+            type="text"
+            placeholder="Enter Name"
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          />
+        </div>
+        <div className="form-group">
+          <label>Job Title</label>
+          <input
+            type="text"
+            placeholder="Enter Job Title"
+            value={formData.jobTitle}
+            onChange={(e) => setFormData({ ...formData, jobTitle: e.target.value })}
+          />
+        </div>
+
+        {/* Row 3: Department and Email */}
+        <div className="form-group">
+          <label>Department</label>
+          <select
+            value={formData.department}
+            onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+          >
+            <option value="">Select Department</option>
+            <option value="HR">HR</option>
+            <option value="Engineering">Engineering</option>
+            <option value="Sales">Sales</option>
+          </select>
+        </div>
+        <div className="form-group">
+          <label>Email</label>
+          <input
+            type="email"
+            placeholder="Enter Email"
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          />
+        </div>
+
+        {/* Row 4: Phone Number and Country */}
+        <div className="form-group">
+          <label>Phone Number</label>
+          <input
+            type="tel"
+            placeholder="Enter Phone Number"
+            value={formData.phoneNumber}
+            onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+          />
+        </div>
+        <div className="form-group">
+          <label>Country</label>
+          <select
+            value={formData.officeLocation}
+            onChange={(e) => setFormData({ ...formData, officeLocation: e.target.value })}
+          >
+            <option value="">Select Country</option>
+            {countries.map((country) => (
+              <option key={country} value={country}>
+                {country}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Row 5: Dates */}
+        <div className="inline-group">
           <div className="form-group">
             <label>Reporting Start Date</label>
-            <DatePicker
+            <input
+              type="date"
               value={formData.startDate}
-              onChange={(date) => setFormData({ ...formData, startDate: date })}
+              onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
             />
           </div>
           <div className="form-group">
             <label>Reporting End Date</label>
-            <DatePicker
+            <input
+              type="date"
               value={formData.endDate}
-              onChange={(date) => setFormData({ ...formData, endDate: date })}
+              onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
             />
           </div>
         </div>
 
-        <button type="submit" className="submit-button">Next</button>
+        {/* Submit Button */}
+        <button type="submit" className="submit-button">
+          Next
+        </button>
       </form>
     </div>
   );
