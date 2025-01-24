@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./styles.css";
+import PopupMessage from "./PopupMessage";
 
 const BasicInfoForm = () => {
   const [formData, setFormData] = useState({
@@ -16,13 +17,18 @@ const BasicInfoForm = () => {
     endDate: "",
   });
 
+  const [isPopupVisible, setPopupVisible] = useState(false);
   const countries = ["United States", "India", "United Kingdom", "Australia", "Canada"];
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert("Form submitted successfully!");
-    navigate("/page2");
+    setPopupVisible(true); // Show the custom pop-up
+  };
+
+  const handlePopupClose = () => {
+    setPopupVisible(false); // Hide the pop-up
+    navigate("/page2"); // Navigate to the next page
   };
 
   return (
@@ -145,6 +151,14 @@ const BasicInfoForm = () => {
           Next
         </button>
       </form>
+
+      {/* Custom Pop-up */}
+      {isPopupVisible && (
+        <PopupMessage
+          message="Form submitted successfully!"
+          onClose={handlePopupClose}
+        />
+      )}
     </div>
   );
 };
