@@ -2,12 +2,15 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaLightbulb } from "react-icons/fa";
 import ChatModal from "./ChatModal"; // ChatModal component
+import PopupMessage from "./PopupMessage"; // Import PopupMessage
 import "./ScopeSelection.css";
 
 const ScopeSelection = () => {
   const [selectedScopes, setSelectedScopes] = useState({});
   const [expandedScope, setExpandedScope] = useState(null);
-  const [showChat, setShowChat] = useState(false); // Chatbot toggle state
+  const [showChat, setShowChat] = useState(false);
+  const [popupMessage, setPopupMessage] = useState(null); // Popup message state
+  const [nextPath, setNextPath] = useState(""); // Stores the next navigation path
   const [descriptions, setDescriptions] = useState({});
   const [loadingDescriptions, setLoadingDescriptions] = useState({});
   const navigate = useNavigate();
@@ -69,21 +72,34 @@ const ScopeSelection = () => {
   // Handle Next button click
   const handleNext = () => {
     if (selectedScopes.stationary === "Yes") {
-      if (window.confirm("Proceed to Stationary Combustion Fuel Selection?")) {
-        navigate("/stationary-fuel-selection");
-      }
+      setPopupMessage("Proceed to Stationary Combustion Fuel Selection?");
+      setNextPath("/stationary-fuel-selection");
     } else if (selectedScopes.mobile === "Yes") {
-      navigate("/mobile-fuel-selection");
+      setPopupMessage("Proceed to Mobile Combustion Fuel Selection?");
+      setNextPath("/mobile-fuel-selection");
     } else if (selectedScopes.fugitive === "Yes") {
-      navigate("/fugitive-emissions");
+      setPopupMessage("Proceed to Fugitive Emissions Page?");
+      setNextPath("/fugitive-emissions");
     } else if (selectedScopes.grid === "Yes") {
-      navigate("/grid-electricity");
+      setPopupMessage("Proceed to Grid Electricity Page?");
+      setNextPath("/grid-electricity");
     } else if (selectedScopes.heat === "Yes") {
-      navigate("/heat-consumption");
+      setPopupMessage("Proceed to Heat/Steam Consumption Page?");
+      setNextPath("/heat-consumption");
     } else if (selectedScopes.cooling === "Yes") {
-      navigate("/cooling");
+      setPopupMessage("Proceed to Cooling Page?");
+      setNextPath("/cooling");
     } else {
-      alert("Please select at least one scope.");
+      setPopupMessage("Please select at least one scope.");
+      setNextPath("");
+    }
+  };
+
+  // Handle popup confirmation
+  const handlePopupClose = () => {
+    setPopupMessage(null);
+    if (nextPath) {
+      navigate(nextPath);
     }
   };
 
@@ -159,21 +175,6 @@ const ScopeSelection = () => {
                 />
               </span>
             </div>
-            {expandedScope === scope.id && (
-              <div className="scope-description">
-                {loadingDescriptions[scope.id] ? "Loading..." : descriptions[scope.id] || "Click the bulb to load the description."}
-              </div>
-            )}
-            <div className="radio-group">
-              <label>
-                <input type="radio" name={scope.id} value="Yes" onChange={() => handleSelection(scope.id, "Yes")} checked={selectedScopes[scope.id] === "Yes"} />
-                Yes
-              </label>
-              <label>
-                <input type="radio" name={scope.id} value="No" onChange={() => handleSelection(scope.id, "No")} checked={selectedScopes[scope.id] === "No"} />
-                No
-              </label>
-            </div>
           </div>
         ))}
       </div>
@@ -184,6 +185,8 @@ const ScopeSelection = () => {
         </button>
         {showChat && <ChatModal onClose={() => setShowChat(false)} />}
       </div>
+
+      {popupMessage && <PopupMessage message={popupMessage} onClose={handlePopupClose} />}
     </div>
   );
 };
