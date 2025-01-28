@@ -15,7 +15,7 @@
   }
   
   .chat-header {
-    background-color: #43a047;
+    background-color: whitesmoke;
     color: white;
     padding: 10px 15px;
     display: flex;
@@ -31,7 +31,7 @@
   .close-button {
     background: none;
     border: none;
-    color: white;
+    color: green;
     font-size: 1.2rem;
     cursor: pointer;
   }
