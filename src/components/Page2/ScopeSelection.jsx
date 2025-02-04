@@ -175,9 +175,36 @@ const ScopeSelection = () => {
                 />
               </span>
             </div>
-          </div>
-        ))}
+            {expandedScope === scope.id && (
+        <div className="scope-description">
+          {loadingDescriptions[scope.id] ? "Loading..." : descriptions[scope.id] || "Click the bulb to load the description."}
+        </div>
+      )}
+      <div className="radio-group">
+        <label>
+          <input
+            type="radio"
+            name={scope.id}
+            value="Yes"
+            onChange={() => handleSelection(scope.id, "Yes")}
+            checked={selectedScopes[scope.id] === "Yes"}
+          />
+          Yes
+        </label>
+        <label>
+          <input
+            type="radio"
+            name={scope.id}
+            value="No"
+            onChange={() => handleSelection(scope.id, "No")}
+            checked={selectedScopes[scope.id] === "No"}
+          />
+          No
+        </label>
       </div>
+    </div>
+  ))}
+</div>  
 
       <div className="chat-button-wrapper">
         <button className="chat-button" onClick={() => setShowChat(!showChat)}>

@@ -167,7 +167,7 @@ const FugitiveSelection = () => {
             type="text"
             value={customFuel}
             onChange={(e) => setCustomFuel(e.target.value)}
-            placeholder="Enter custom fuel type"
+            placeholder="Enter source of Fugitive Emission"
             className="custom-fuel-input"
           />
           <button onClick={handleAddCustomFuel} className="custom-fuel-btn">
@@ -184,6 +184,7 @@ const FugitiveSelection = () => {
       <thead>
         <tr>
           <th>Gas Type</th>
+          <th>Source</th>
           <th>Data Available?</th>
           <th>UoM</th>
           <th>Value (User Input)</th>
@@ -198,6 +199,7 @@ const FugitiveSelection = () => {
           gases.map((gas) => (
             <tr key={gas}>
               <td>{gas}</td>
+              <td>{fuelType}</td>
               <td>
                 <select
                   onChange={(e) =>
