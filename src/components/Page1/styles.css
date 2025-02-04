@@ -102,10 +102,19 @@ button.submit-button:hover {
 /* Responsive styles */
 @media (max-width: 768px) {
   .basic-info-form {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* Ensure a single-column layout */
   }
 
   .inline-group {
     flex-direction: column; /* Stack the date fields on smaller screens */
+    width: 100%;
+  }
+
+  .form-group {
+    width: 100%;
+  }
+
+  button.submit-button {
+    grid-column: span 1; /* Ensure button takes full width on small screens */
   }
 }
