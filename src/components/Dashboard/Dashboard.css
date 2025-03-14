@@ -1,0 +1,209 @@
+:root {
+  --color-emerald-50: #ecfdf5;
+  --color-emerald-100: #d1fae5;
+  --color-emerald-500: #10b981;
+  --color-emerald-600: #059669;
+  --color-emerald-700: #047857;
+  --color-emerald-800: #065f46;
+  --color-gray-100: #f3f4f6;
+  --color-gray-500: #6b7280;
+  --color-gray-700: #374151;
+  --color-gray-900: #111827;
+}
+
+.dashboard {
+  min-height: 100vh;
+  padding: 1.5rem;
+  background: linear-gradient(to bottom right, var(--color-emerald-50), var(--color-emerald-100));
+}
+
+.container {
+  max-width: 1600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Updated eco-button styles */
+.eco-button {
+  position: relative;
+  margin-bottom: 1rem;
+  padding: 0.875rem 1.5rem;
+  background: linear-gradient(
+    135deg,
+    var(--color-emerald-600),
+    var(--color-emerald-700)
+  );
+  color: white;
+  border: none;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.15);
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+}
+
+.eco-button::before {
+  margin-right: 0.5rem;
+  font-size: 1.1rem;
+  transition: transform 0.3s ease;
+}
+
+.eco-button:hover {
+  background: linear-gradient(
+    135deg,
+    var(--color-emerald-700),
+    var(--color-emerald-800)
+  );
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
+  transform: translateY(-2px);
+}
+
+.eco-button:hover::before {
+  transform: rotate(15deg);
+}
+
+.eco-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 4px rgba(5, 150, 105, 0.15);
+}
+
+/* Rest of the existing styles */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.icon-container {
+  background-color: var(--color-emerald-50);
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+}
+
+.icon-container svg {
+  color: var(--color-emerald-600);
+}
+
+.dashboard-title {
+  font-size: 1.875rem;
+  font-weight: bold;
+  color: var(--color-gray-900);
+  margin: 0;
+}
+
+.total-emissions {
+  background-color: var(--color-emerald-50);
+  padding: 1rem 1.5rem;
+  border-radius: 0.75rem;
+}
+
+.total-emissions-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-emerald-600);
+  margin: 0;
+}
+
+.total-emissions-value {
+  font-size: 1.875rem;
+  font-weight: bold;
+  color: var(--color-emerald-700);
+  margin: 0;
+}
+
+.emissions-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .emissions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .emissions-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.emission-card {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.emission-card:hover {
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.card-icon {
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  background-color: var(--color-emerald-50);
+}
+
+.card-icon svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--color-emerald-600);
+}
+
+.card-title {
+  font-weight: 600;
+  color: var(--color-gray-900);
+  margin: 0;
+}
+
+.card-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--color-emerald-600);
+  margin: 0;
+}
+
+.charts-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .charts-container {
+    grid-template-columns: 3fr 2fr;
+  }
+}
+
+.chart-wrapper {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}

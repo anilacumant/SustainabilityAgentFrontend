@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import axios from "axios";
-import { FaLightbulb } from "react-icons/fa"; // Light Bulb Icon for Description Toggle
+import api from "../../../api";
+import { FaLightbulb } from "react-icons/fa"; 
 import "./Scope2Selection.css";
 
 const Scope2Selection = () => {
@@ -15,61 +15,50 @@ const Scope2Selection = () => {
   ]);
   const [selectedFuels, setSelectedFuels] = useState([]);
   const [emissionData, setEmissionData] = useState({});
-  const [customFuel, setCustomFuel] = useState("");
-  const [showDescription, setShowDescription] = useState({}); // Toggles for descriptions
-  const [error, setError] = useState(null); // Error handling
+  const [showDescription, setShowDescription] = useState({}); 
+  const [error, setError] = useState(null);
 
-  // Handle fuel selection
-  const handleFuelSelect = (fuelType) => {
-    if (!selectedFuels.includes(fuelType)) {
-      setSelectedFuels([...selectedFuels, fuelType]);
-      fetchFuelData(fuelType); // Fetch data for the selected fuel
+  const handleFuelSelect = (energyType) => {
+    if (!selectedFuels.includes(energyType)) {
+      setSelectedFuels([...selectedFuels, energyType]);
+      fetchFuelData(energyType); 
     }
   };
 
-  // Handle fetching description and emission factor
-  const fetchFuelData = async (fuelType) => {
+  const fetchFuelData = async (energyType) => {
     try {
-      const response = await axios.post("http://localhost:5000/api/get-fuel-data", { fuel_type: fuelType });
+      const response = await api.post("/api/get-energy-data", { energy_type: energyType });
       setEmissionData((prev) => ({
         ...prev,
-        [fuelType]: {
+        [energyType]: {
           description: response.data.description,
           emissionFactor: response.data.emission_factor,
           uom: response.data.uom || "Unknown",
+          emission_factor_UOM :response.data.emission_factor_UOM
         },
       }));
     } catch (error) {
       console.error("Error fetching fuel data:", error);
-      setError(`Error fetching fuel data for ${fuelType}`);
+      setError(`Error fetching fuel data for ${energyType}`);
     }
   };
 
-  // Handle adding custom fuel
-  const handleAddCustomFuel = () => {
-    if (customFuel && !energyTypes.includes(customFuel)) {
-      setenergyTypes([...energyTypes, customFuel]);
-      fetchFuelData(customFuel);
-      setCustomFuel("");
-    }
-  };
 
   // Toggle description visibility
-  const toggleDescription = (fuelType) => {
-    if (!emissionData[fuelType]) {
-      // If data isn't loaded, fetch it first
-      fetchFuelData(fuelType);
+  const toggleDescription = (energyType) => {
+    if (!emissionData[energyType]) {
+      fetchFuelData(energyType);
     }
     setShowDescription((prev) => ({
       ...prev,
-      [fuelType]: !prev[fuelType], // Toggle the visibility
+      [energyType]: !prev[energyType], 
     }));
   };
 
   // Render description dynamically
-  const renderDescription = (fuelType) => {
-    const fuelData = emissionData[fuelType];
-    if (fuelData && showDescription[fuelType]) {
+  const renderDescription = (energyType) => {
+    const fuelData = emissionData[energyType];
+    if (fuelData && showDescription[energyType]) {
       return (
         <p className="description">
           {fuelData.description || "No description available."}
@@ -79,24 +68,63 @@ const Scope2Selection = () => {
     return null;
   };
 
-  // Calculate emissions
-  const calculateEmissions = (fuelType) => {
-    const data = emissionData[fuelType];
+  const calculateEmissions = (energyType) => {
+    const data = emissionData[energyType];
     if (data && data.value && data.emissionFactor) {
       return (data.value * data.emissionFactor).toFixed(2);
     }
-    return "N/A";
+    return 0;
   };
-
-  // Handle user input changes
-  const handleInputChange = (fuelType, field, value) => {
+  const totalEmissions = () => {
+    let total = 0.0; 
+  
+    total = selectedFuels.reduce((total, fuelType) => {
+      const data = emissionData[fuelType];
+      if (data && data.value && data.emissionFactor) {
+        return total + data.value * data.emissionFactor;
+      }
+      return total;
+    }, total);
+    if (total===0.0){
+      return total;
+    } else{
+    return `${total.toFixed(2)} kgCO₂e`; 
+    }
+  };
+  const handleInputChange = (energyType, field, value) => {
     setEmissionData((prev) => ({
       ...prev,
-      [fuelType]: {
-        ...prev[fuelType],
+      [energyType]: {
+        ...prev[energyType],
         [field]: value,
       },
     }));
+  };
+  const saveData = async () => {
+    const storedData = selectedFuels.map((fuelType) => ({
+      fuelType,
+      dataAvailable: emissionData[fuelType]?.dataAvailable || "",
+      uom: emissionData[fuelType]?.uom || "",
+      value: emissionData[fuelType]?.value || 0,
+      actualEstimated: emissionData[fuelType]?.actualEstimated || "",
+      attachment: emissionData[fuelType]?.attachment ? emissionData[fuelType]?.attachment.name : "",
+      emissionFactor: emissionData[fuelType]?.emissionFactor || "",
+      emissionFactorUOM: emissionData[fuelType]?.emission_factor_UOM || "",
+      emissions: calculateEmissions(fuelType)
+    }));
+    
+    storedData.push({company:localStorage.getItem("company")});
+    storedData.push({scopetype:"Scope2"});
+
+    // localStorage.setItem("StationaryCombustion", JSON.stringify(storedData));
+    const response = await api.post("/api/emission-data", storedData);
+    if (response.status === 200) {
+      console.log("done");
+      
+    } else {
+      console.error("Unexpected response:", response);
+    }
+    
   };
 
   return (
@@ -118,17 +146,18 @@ const Scope2Selection = () => {
             <th>Actual/Estimated</th>
             <th>Attachment</th>
             <th>Emission Factor</th>
+            <th>Emission Factor UOM</th>
             <th>Emissions</th>
           </tr>
         </thead>
         <tbody>
-          {selectedFuels.map((fuelType) => (
-            <tr key={fuelType}>
-              <td>{fuelType}</td>
+          {selectedFuels.map((energyType) => (
+            <tr key={energyType}>
+              <td>{energyType}</td>
               <td>
                 <select
                   onChange={(e) =>
-                    handleInputChange(fuelType, "dataAvailable", e.target.value)
+                    handleInputChange(energyType, "dataAvailable", e.target.value)
                   }
                   className="dropdown"
                 >
@@ -136,13 +165,13 @@ const Scope2Selection = () => {
                   <option value="No">No</option>
                 </select>
               </td>
-              <td>{emissionData[fuelType]?.uom || "Loading..."}</td>
+              <td>{emissionData[energyType]?.uom || "Loading..."}</td>
               <td>
                 <input
                   type="number"
                   placeholder="Enter value"
                   onChange={(e) =>
-                    handleInputChange(fuelType, "value", parseFloat(e.target.value))
+                    handleInputChange(energyType, "value", parseFloat(e.target.value))
                   }
                   className="input-field"
                 />
@@ -150,7 +179,7 @@ const Scope2Selection = () => {
               <td>
                 <select
                   onChange={(e) =>
-                    handleInputChange(fuelType, "actualEstimated", e.target.value)
+                    handleInputChange(energyType, "actualEstimated", e.target.value)
                   }
                   className="dropdown"
                 >
@@ -160,25 +189,31 @@ const Scope2Selection = () => {
               </td>
               <td>
                 <div className="file-upload">
-                  <label htmlFor={`file-${fuelType}`} className="file-upload-label">
+                  <label htmlFor={`file-${energyType}`} className="file-upload-label">
                     Choose File
                   </label>
                   <input
-                    id={`file-${fuelType}`}
+                    id={`file-${energyType}`}
                     type="file"
                     className="file-upload-input"
                     onChange={(e) =>
-                      handleInputChange(fuelType, "attachment", e.target.files[0])
+                      handleInputChange(energyType, "attachment", e.target.files[0])
                     }
                   />
                 </div>
               </td>
-              <td>{emissionData[fuelType]?.emissionFactor || "Fetching..."}</td>
-              <td>{calculateEmissions(fuelType)}</td>
+              <td>{emissionData[energyType]?.emissionFactor || "Fetching..."}</td>
+              <td>{emissionData[energyType]?.emission_factor_UOM || "Fetching..."}</td>
+              <td>{calculateEmissions(energyType)}</td>
             </tr>
           ))}
+          <tr>
+                <td colSpan="8" style={{ textAlign: "right", fontWeight: "bold" }}>Total Emissions:</td>
+                <td style={{ fontWeight: "bold" }}>{totalEmissions()}</td>
+              </tr>
         </tbody>
       </table>
+      <button className="save-button" onClick={saveData}>Save Data</button>
     </div>
   )}
 
@@ -193,22 +228,22 @@ const Scope2Selection = () => {
         </tr>
       </thead>
       <tbody>
-        {energyTypes.map((fuelType) => (
-          <tr key={fuelType}>
+        {energyTypes.map((energyType) => (
+          <tr key={energyType}>
             <td>
               <input
                 type="checkbox"
-                onChange={() => handleFuelSelect(fuelType)}
-                checked={selectedFuels.includes(fuelType)}
+                onChange={() => handleFuelSelect(energyType)}
+                checked={selectedFuels.includes(energyType)}
               />
             </td>
-            <td>{fuelType}</td>
+            <td>{energyType}</td>
             <td>
               <FaLightbulb
-                onClick={() => toggleDescription(fuelType)}
+                onClick={() => toggleDescription(energyType)}
                 className="lightbulb-icon"
               />
-              {renderDescription(fuelType)}
+              {renderDescription(energyType)}
             </td>
           </tr>
         ))}

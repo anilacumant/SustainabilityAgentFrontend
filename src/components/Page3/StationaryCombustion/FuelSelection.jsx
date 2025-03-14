@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-import axios from "axios";
-import { FaLightbulb } from "react-icons/fa"; // Light Bulb Icon for Description Toggle
+import React, { useState, useEffect } from "react";
+import ReactMarkdown from "react-markdown";
+import { FaLightbulb } from "react-icons/fa"; 
+import api from "../../../api";
 import "./FuelSelection.css";
 
 const FuelSelection = () => {
@@ -18,32 +19,61 @@ const FuelSelection = () => {
     "Biodiesel",
     "Landfill Gas",
     "Waste Oil",
-    "Hydrogen (H₂)",
+    "Hydrogen",
   ]);
+  const [description,setDescription] = useState('')
   const [selectedFuels, setSelectedFuels] = useState([]);
   const [emissionData, setEmissionData] = useState({});
   const [customFuel, setCustomFuel] = useState("");
-  const [showDescription, setShowDescription] = useState({}); // Toggles for descriptions
-  const [error, setError] = useState(null); // Error handling
+  const [showDescription, setShowDescription] = useState({});
+  const [error, setError] = useState(null);
 
-  // Handle fuel selection
+  useEffect(() => {
+    const fetchFuelTypes = async () => {
+      try {
+        const response = await api.post("/api/get-fuels", {
+          scope: "Stationary Combustion",
+          company_row_key: localStorage.getItem("company"),
+        });
+  
+        const apiFuelTypes = response.data.fuels.stationary_combustion || []; 
+        setFuelTypes((prevFuelTypes) => [...new Set([...prevFuelTypes, ...apiFuelTypes])]);
+        setDescription(response.data.description); 
+  
+        setSelectedFuels(apiFuelTypes);
+        apiFuelTypes.forEach(fetchFuelData);
+      } catch (err) {
+        console.error("Error fetching fuel types:", err);
+        setError("Failed to load fuel types.");
+      }
+    };
+  
+    fetchFuelTypes();
+  }, []);
+  
+
   const handleFuelSelect = (fuelType) => {
+    setSelectedFuels((prevSelectedFuels) => 
+      prevSelectedFuels.includes(fuelType)
+        ? prevSelectedFuels.filter((fuel) => fuel !== fuelType)
+        : [...prevSelectedFuels, fuelType] 
+    );
+  
     if (!selectedFuels.includes(fuelType)) {
-      setSelectedFuels([...selectedFuels, fuelType]);
-      fetchFuelData(fuelType); // Fetch data for the selected fuel
+      fetchFuelData(fuelType);
     }
   };
 
-  // Handle fetching description and emission factor
   const fetchFuelData = async (fuelType) => {
     try {
-      const response = await axios.post("http://localhost:5000/api/get-fuel-data", { fuel_type: fuelType });
+      const response = await api.post("/api/get-fuel-data", { fuel_type: fuelType });
       setEmissionData((prev) => ({
         ...prev,
         [fuelType]: {
           description: response.data.description,
-          emissionFactor: response.data.emission_factor,
+          emissionFactor: response.data.emission_factor !== undefined ? response.data.emission_factor : 0.0,
           uom: response.data.uom || "Unknown",
+          emission_factor_UOM: response.data.emission_factor_UOM,
         },
       }));
     } catch (error) {
@@ -52,7 +82,6 @@ const FuelSelection = () => {
     }
   };
 
-  // Handle adding custom fuel
   const handleAddCustomFuel = () => {
     if (customFuel && !fuelTypes.includes(customFuel)) {
       setFuelTypes([...fuelTypes, customFuel]);
@@ -61,41 +90,45 @@ const FuelSelection = () => {
     }
   };
 
-  // Toggle description visibility
-  const toggleDescription = (fuelType) => {
+   const toggleDescription = (fuelType) => {
     if (!emissionData[fuelType]) {
-      // If data isn't loaded, fetch it first
       fetchFuelData(fuelType);
     }
     setShowDescription((prev) => ({
       ...prev,
-      [fuelType]: !prev[fuelType], // Toggle the visibility
+      [fuelType]: !prev[fuelType],
     }));
   };
 
-  // Render description dynamically
   const renderDescription = (fuelType) => {
     const fuelData = emissionData[fuelType];
     if (fuelData && showDescription[fuelType]) {
-      return (
-        <p className="description">
-          {fuelData.description || "No description available."}
-        </p>
-      );
+      return <p className="description">{fuelData.description || "No description available."}</p>;
     }
     return null;
   };
 
-  // Calculate emissions
   const calculateEmissions = (fuelType) => {
-    const data = emissionData[fuelType];
+    const data = emissionData[fuelType];    
+    
     if (data && data.value && data.emissionFactor) {
       return (data.value * data.emissionFactor).toFixed(2);
     }
-    return "N/A";
+    return 0;
   };
 
-  // Handle user input changes
+  const totalEmissions = () => {
+    let total = selectedFuels.reduce((sum, fuelType) => {
+      const data = emissionData[fuelType];
+      if (data && data.value && data.emissionFactor) {
+        return sum + data.value * data.emissionFactor;
+      }
+      return sum;
+    }, 0);
+    
+    return total === 0 ? total : `${total.toFixed(2)} kgCO₂e`;
+  };
+
   const handleInputChange = (fuelType, field, value) => {
     setEmissionData((prev) => ({
       ...prev,
@@ -106,29 +139,57 @@ const FuelSelection = () => {
     }));
   };
 
+  const saveData = async () => {
+    const storedData = selectedFuels.map((fuelType) => ({
+      fuelType,
+      dataAvailable: emissionData[fuelType]?.dataAvailable || "",
+      uom: emissionData[fuelType]?.uom || "",
+      value: emissionData[fuelType]?.value || 0,
+      actualEstimated: emissionData[fuelType]?.actualEstimated || "",
+      attachment: emissionData[fuelType]?.attachment ? emissionData[fuelType]?.attachment.name : "",
+      emissionFactor: emissionData[fuelType]?.emissionFactor || "",
+      emissionFactorUOM: emissionData[fuelType]?.emission_factor_UOM || "",
+      emissions: calculateEmissions(fuelType),
+    }));
+
+    storedData.push({ company: localStorage.getItem("company") });
+    storedData.push({ scopetype: "StationaryCombustion" });
+
+    try {
+      const response = await api.post("/api/emission-data", storedData);
+      if (response.status === 200) {
+        console.log("Data saved successfully");
+      } else {
+        console.error("Unexpected response:", response);
+      }
+    } catch (error) {
+      console.error("Error saving data:", error);
+    }
+  };
+
   return (
     <div className="fuel-selection-container">
-  <h1 className="fuel-selection-title">Fuel Selection</h1>
+      <h1 className="fuel-selection-title">Stationary Combustion</h1>
 
-  {/* Add Custom Fuel Section */}
-  <div className="custom-fuel-section">
-    <h2>Add Custom Fuel</h2>
-    <div className="custom-fuel-container">
-      <input
-        type="text"
-        value={customFuel}
-        onChange={(e) => setCustomFuel(e.target.value)}
-        placeholder="Enter custom fuel type"
-        className="custom-fuel-input"
-      />
-      <button onClick={handleAddCustomFuel} className="custom-fuel-btn">
-        Add
-      </button>
-    </div>
-  </div>
+      {error && <p className="error-message">{error}</p>}
 
-  {/* Based on Chosen Items Section */}
-  {selectedFuels.length > 0 && (
+      {/* Add Custom Fuel Section */}
+      <div className="custom-fuel-section">
+        <h2>Add Custom Fuel</h2>
+        <div className="custom-fuel-container">
+          <input
+            type="text"
+            value={customFuel}
+            onChange={(e) => setCustomFuel(e.target.value)}
+            placeholder="Enter custom fuel type"
+            className="custom-fuel-input"
+          />
+          <button onClick={handleAddCustomFuel} className="custom-fuel-btn">Add</button>
+        </div>
+      </div>
+      
+        {/* Selected Fuels Data Table */}
+        {selectedFuels.length > 0 && (
     <div className="based-on-items-section">
       <h2>Based on Chosen Items</h2>
       <table className="based-on-items-table">
@@ -141,6 +202,7 @@ const FuelSelection = () => {
             <th>Actual/Estimated</th>
             <th>Attachment</th>
             <th>Emission Factor</th>
+            <th>Emission Factor UOM</th>
             <th>Emissions</th>
           </tr>
         </thead>
@@ -196,49 +258,57 @@ const FuelSelection = () => {
                   />
                 </div>
               </td>
-              <td>{emissionData[fuelType]?.emissionFactor || "Fetching..."}</td>
+              <td>{emissionData[fuelType]?.emissionFactor !== undefined ? emissionData[fuelType]?.emissionFactor : "Fetching..."}</td>
+              <td>{emissionData[fuelType]?.emission_factor_UOM || "Fetching..."}</td>
               <td>{calculateEmissions(fuelType)}</td>
             </tr>
           ))}
+          <tr>
+                <td colSpan="8" style={{ textAlign: "right", fontWeight: "bold" }}>Total Emissions:</td>
+                <td style={{ fontWeight: "bold" }}>{totalEmissions()}</td>
+              </tr>
         </tbody>
       </table>
+      <button className="save-button" onClick={saveData}>Save Data</button>
     </div>
   )}
+      {/* Fuel Selection Table */}
+      <div className="fuel-selection-table-section">
+      <ReactMarkdown>{description}</ReactMarkdown>
+        <table className="fuel-selection-table">
+          <thead>
+            <tr>
+              <th>Select</th>
+              <th>Fuel Type</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            {fuelTypes.map((fuelType) => (
+              <tr key={fuelType}>
+                <td>
+                  <input
+                    type="checkbox"
+                    onChange={() => handleFuelSelect(fuelType)}
+                    checked={selectedFuels.includes(fuelType)}
+                  />
+                </td>
+                <td>{fuelType}</td>
+                <td>
+                  <FaLightbulb
+                    onClick={() => toggleDescription(fuelType)}
+                    className="lightbulb-icon"
+                  />
+                  {renderDescription(fuelType)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-  {/* Fuel Selection Table */}
-  <div className="fuel-selection-table-section">
-    <table className="fuel-selection-table">
-      <thead>
-        <tr>
-          <th>Select</th>
-          <th>Fuel Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-        {fuelTypes.map((fuelType) => (
-          <tr key={fuelType}>
-            <td>
-              <input
-                type="checkbox"
-                onChange={() => handleFuelSelect(fuelType)}
-                checked={selectedFuels.includes(fuelType)}
-              />
-            </td>
-            <td>{fuelType}</td>
-            <td>
-              <FaLightbulb
-                onClick={() => toggleDescription(fuelType)}
-                className="lightbulb-icon"
-              />
-              {renderDescription(fuelType)}
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-</div>
+      
+    </div>
   );
 };
 

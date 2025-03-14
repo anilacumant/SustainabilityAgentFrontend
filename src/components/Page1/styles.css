@@ -1,120 +1,285 @@
-/* General body styles */
-body {
-  font-family: 'Poppins', Arial, sans-serif;
+/* Professional Sustainability-Themed Form with Side Image */
+:root {
+  --primary-color: #2C6E49;
+  --primary-hover: #14452C;
+  --background-light: #defbed;
+  --border-color: #A2A77F;
+  --text-dark: #333D29;
+  --input-bg: rgba(255, 255, 255, 0.9);
+  --success-color: #4CAF50;
+  --error-color: #FF5252;
+  --leaf-accent: #88B04B;
+}
+
+* {
   margin: 0;
   padding: 0;
-  background: linear-gradient(to right, #dfffe0, #e3f5fc);
-  color: #333;
+  box-sizing: border-box;
 }
 
-/* Form container styling */
-.form-container {
-  width: 85%;
-  max-width: 1400px;
-  margin: 30px auto;
-  background: #fff;
-  padding: 30px 50px;
-  border-radius: 12px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+body {
+  font-family: 'Inter', sans-serif;
+  color: var(--text-dark);
+  background: var(--background-light);
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
-/* Title styling */
-h1 {
-  text-align: center;
-  font-size: 2rem;
-  color: #4caf50;
-  margin-bottom: 30px;
-  font-weight: bold;
-}
-
-/* Form layout */
-.basic-info-form {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr); /* Two-column layout */
-  gap: 20px; /* Spacing between fields */
-}
-
-/* Full-width row for specific fields */
-.full-width {
-  grid-column: span 2;
-}
-
-/* Inline row for dates */
-.inline-group {
+.page-container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 20px;
   display: flex;
-  gap: 20px; /* Add spacing between the date fields */
-  align-items: center;
+  align-items: flex-start;
+  gap: 40px;
+}
+
+.form-card {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+  padding: 32px;
+  border: 2px solid var(--border-color);
+  position: relative;
+}
+
+.side-image {
+  width: 300px;
+  height: auto;
+  position: sticky;
+  top: 40px;
+}
+
+.side-image img {
   width: 100%;
+  height: auto;
+  object-fit: contain;
 }
 
-/* Input group */
+.form-header {
+  margin-bottom: 24px;
+}
+
+.form-title {
+  font-size: 28px;
+  color: var(--primary-hover);
+  text-align: center;
+  font-weight: 600;
+  text-transform: capitalize;
+  margin-bottom: 24px;
+  position: relative;
+  padding-bottom: 12px;
+}
+
+.form-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background: var(--primary-color);
+  border-radius: 2px;
+}
+
+.form-content {
+  max-width: 100%;
+}
+
+.form-section {
+  margin-bottom: 20px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
 .form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-label {
-  font-size: 1rem;
-  font-weight: bold;
+  position: relative;
   margin-bottom: 8px;
-  color: #4caf50;
 }
 
-/* Input and dropdown styling */
-input,
-select {
-  padding: 14px 16px;
-  font-size: 1rem;
-  border: 1.5px solid #ccc;
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: var(--primary-hover);
+  font-size: 14px;
+}
+
+.form-control {
+  width: 100%;
+  height: 42px;
+  padding: 8px 12px;
+  border: 2px solid var(--border-color);
   border-radius: 8px;
-  background: #f9f9f9;
-  transition: all 0.3s ease;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+  font-size: 15px;
+  background-color: var(--input-bg);
+  color: var(--text-dark);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-input:focus,
-select:focus {
-  border-color: #4caf50;
-  box-shadow: 0 0 8px rgba(76, 175, 80, 0.4);
+.form-control:hover {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 8px rgba(44, 110, 73, 0.2);
+}
+
+.form-control:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 12px rgba(44, 110, 73, 0.3);
   outline: none;
 }
 
-/* Button styling */
-button.submit-button {
-  width: 100%;
-  padding: 15px;
-  background: #4caf50;
+.form-control.error {
+  border-color: var(--error-color);
+}
+
+.error-message {
+  color: var(--error-color);
+  font-size: 12px;
+  margin-top: 3px;
+  display: block;
+}
+
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.back-button,
+.submit-button {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.back-button {
+  background: transparent;
+  border: 2px solid var(--primary-color);
+  color: var(--primary-color);
+}
+
+.back-button:hover {
+  background: var(--primary-hover);
+  color: white;
+}
+
+.submit-button {
+  background: var(--primary-color);
   color: white;
   border: none;
-  border-radius: 8px;
-  font-size: 1.2rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  grid-column: span 2;
 }
 
-button.submit-button:hover {
-  background: #388e3c;
-  box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+.submit-button:hover {
+  background: var(--primary-hover);
 }
 
-/* Responsive styles */
+/* Loading state styles */
+.form-loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* Custom Select Styling */
+select.form-control {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%232C6E49' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 35px;
+}
+
+/* Disabled State Styling */
+.form-control:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Phone number field specific styling */
+input[type="tel"].form-control {
+  letter-spacing: 0.5px;
+}
+
+/* Date input styling */
+input[type="date"].form-control {
+  padding: 8px 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .page-container {
+    flex-direction: column;
+    margin: 20px auto;
+  }
+
+  .side-image {
+    width: 200px;
+    margin: 0 auto 20px;
+    position: static;
+  }
+  
+  .form-card {
+    padding: 24px;
+  }
+}
+
 @media (max-width: 768px) {
-  .basic-info-form {
-    grid-template-columns: 1fr; /* Ensure a single-column layout */
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
-
-  .inline-group {
-    flex-direction: column; /* Stack the date fields on smaller screens */
+  
+  .form-title {
+    font-size: 24px;
+  }
+  
+  .form-card {
+    padding: 20px 16px;
+  }
+  
+  .form-section {
+    margin-bottom: 16px;
+  }
+  
+  .button-group {
+    flex-direction: column;
+  }
+  
+  .back-button,
+  .submit-button {
     width: 100%;
   }
+}
 
+/* Add spacing for form groups when stacked vertically */
+@media (max-width: 768px) {
   .form-group {
-    width: 100%;
+    margin-bottom: 16px;
   }
+}
 
-  button.submit-button {
-    grid-column: span 1; /* Ensure button takes full width on small screens */
+/* Additional spacing adjustments for smaller screens */
+@media (max-width: 480px) {
+  .page-container {
+    padding: 12px;
+  }
+  
+  .form-card {
+    padding: 16px 12px;
+  }
+  
+  .form-control {
+    height: 40px;
+    font-size: 14px;
   }
 }

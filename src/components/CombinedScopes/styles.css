@@ -1,0 +1,144 @@
+.sustainability-container {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f8faf8;
+}
+.sustainability-nav {
+  display: flex;
+  flex-direction: column;
+  width: 280px;
+  background-color: #059669;
+  padding: 24px 16px;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+}
+.nav-button {
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+.scope-button {
+  font-weight: 600;
+  font-size: 1.1em;
+  background-color: rgba(255, 255, 255, 0.15);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.scope-button .expand-icon {
+  font-size: 1.2em;
+  font-weight: 700;
+  margin-left: 8px;
+}
+.scope-button.expanded {
+  background-color: rgba(255, 255, 255, 0.25);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  margin-bottom: 0;
+}
+.scope-submenu {
+  max-height: 0;
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.15);
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  margin-top: 0px;
+  margin-bottom: 8px;
+}
+.scope-submenu.expanded {
+  max-height: 300px; /* Adjust as needed */
+}
+.submenu-button {
+  margin: 4px 0;
+  padding: 12px 20px 12px 30px;
+  background-color: rgba(255, 255, 255, 0.05);
+  font-size: 0.95em;
+  margin-left: 6px;
+}
+.submenu-button:first-child {
+  margin-top: 8px;
+}
+.submenu-button:last-child {
+  margin-bottom: 8px;
+}
+.dashboard-button {
+  margin-top: 20px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+.nav-button::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  background-color: #81C784;
+  transform: scaleY(0);
+}
+.nav-button:hover:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translateX(4px);
+}
+.nav-button:hover:not(:disabled)::before {
+  transform: scaleY(1);
+}
+.nav-button.active {
+  background-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+.nav-button.active::before {
+  transform: scaleY(1);
+  background-color: #4CAF50;
+}
+.nav-button:disabled {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.4);
+  cursor: not-allowed;
+  transform: none;
+}
+.scope-button:disabled {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.6);
+}
+.nav-button:disabled::before {
+  display: none;
+}
+.component-wrapper {
+  flex: 1;
+  padding: 32px;
+  background-color: white;
+  border-radius: 0;
+  margin: 0;
+  min-height: 100vh;
+}
+.no-selection-message {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 40px;
+  color: #059669;
+  font-size: 1.2em;
+  background-color: rgba(76, 175, 80, 0.1);
+  border-radius: 12px;
+  border: 2px dashed #81C784;
+  margin: 24px auto;
+  max-width: 600px;
+}
+.selection-prompt {
+  text-align: center;
+  padding: 40px;
+  color: #059669;
+  font-size: 1.2em;
+  margin: 24px;
+}

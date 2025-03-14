@@ -1,11 +1,12 @@
-import React, { useState } from "react";
-import axios from "axios";
-import { FaLightbulb } from "react-icons/fa"; // Light Bulb Icon for Description Toggle
+import React, { useState, useEffect } from "react";
+import ReactMarkdown from "react-markdown";
+import api from "../../../api";
+import { FaLightbulb } from "react-icons/fa"; 
 import "./MobileCombustion.css";
 
 const MobileCombustion = () => {
   const [fuelTypes, setFuelTypes] = useState([
-    "Gasoline",
+"Gasoline",
 "Diesel",
 "Biodiesel (B100)",
 "Ethanol (E85)",
@@ -20,30 +21,58 @@ const MobileCombustion = () => {
 "Methanol"
 
   ]);
+  const [description,setDescription] = useState('')
   const [selectedFuels, setSelectedFuels] = useState([]);
   const [emissionData, setEmissionData] = useState({});
   const [customFuel, setCustomFuel] = useState("");
-  const [showDescription, setShowDescription] = useState({}); // Toggles for descriptions
-  const [error, setError] = useState(null); // Error handling
+  const [showDescription, setShowDescription] = useState({}); 
+  const [error, setError] = useState(null);
 
-  // Handle fuel selection
+  useEffect(() => {
+    const fetchFuelTypes = async () => {
+      try {
+        const response = await api.post("/api/get-fuels", {
+          scope: "Mobile Combustion",
+          company_row_key: localStorage.getItem("company"),
+        });
+  
+        const apiFuelTypes = response.data.fuels.mobile_combustion || []; 
+        setFuelTypes((prevFuelTypes) => [...new Set([...prevFuelTypes, ...apiFuelTypes])]);
+        setDescription(response.data.description); 
+  
+        setSelectedFuels(apiFuelTypes);
+        apiFuelTypes.forEach(fetchFuelData);
+      } catch (err) {
+        console.error("Error fetching fuel types:", err);
+        setError("Failed to load fuel types.");
+      }
+    };
+  
+    fetchFuelTypes();
+  }, []);
+
   const handleFuelSelect = (fuelType) => {
+    setSelectedFuels((prevSelectedFuels) => 
+      prevSelectedFuels.includes(fuelType)
+        ? prevSelectedFuels.filter((fuel) => fuel !== fuelType) // Remove if already selected
+        : [...prevSelectedFuels, fuelType] // Add if not selected
+    );
+  
     if (!selectedFuels.includes(fuelType)) {
-      setSelectedFuels([...selectedFuels, fuelType]);
-      fetchFuelData(fuelType); // Fetch data for the selected fuel
+      fetchFuelData(fuelType);
     }
   };
 
-  // Handle fetching description and emission factor
   const fetchFuelData = async (fuelType) => {
     try {
-      const response = await axios.post("http://localhost:5000/api/get-fuel-data", { fuel_type: fuelType });
+      const response = await api.post("/api/get-fuel-data", { fuel_type: fuelType });
       setEmissionData((prev) => ({
         ...prev,
         [fuelType]: {
           description: response.data.description,
-          emissionFactor: response.data.emission_factor,
-          uom: response.data.uom || "Unknown",
+          emissionFactor: response.data.emission_factor !== undefined ? response.data.emission_factor : 0.0,
+          uom: response.data.uom,
+          emission_factor_UOM :response.data.emission_factor_UOM
         },
       }));
     } catch (error) {
@@ -52,7 +81,6 @@ const MobileCombustion = () => {
     }
   };
 
-  // Handle adding custom fuel
   const handleAddCustomFuel = () => {
     if (customFuel && !fuelTypes.includes(customFuel)) {
       setFuelTypes([...fuelTypes, customFuel]);
@@ -61,19 +89,16 @@ const MobileCombustion = () => {
     }
   };
 
-  // Toggle description visibility
   const toggleDescription = (fuelType) => {
     if (!emissionData[fuelType]) {
-      // If data isn't loaded, fetch it first
       fetchFuelData(fuelType);
     }
     setShowDescription((prev) => ({
       ...prev,
-      [fuelType]: !prev[fuelType], // Toggle the visibility
+      [fuelType]: !prev[fuelType], 
     }));
   };
 
-  // Render description dynamically
   const renderDescription = (fuelType) => {
     const fuelData = emissionData[fuelType];
     if (fuelData && showDescription[fuelType]) {
@@ -86,16 +111,30 @@ const MobileCombustion = () => {
     return null;
   };
 
-  // Calculate emissions
   const calculateEmissions = (fuelType) => {
     const data = emissionData[fuelType];
     if (data && data.value && data.emissionFactor) {
       return (data.value * data.emissionFactor).toFixed(2);
     }
-    return "N/A";
+    return 0;
+  };
+  const totalEmissions = () => {
+    let total = 0.0; 
+  
+    total = selectedFuels.reduce((total, fuelType) => {
+      const data = emissionData[fuelType];
+      if (data && data.value && data.emissionFactor) {
+        return total + data.value * data.emissionFactor;
+      }
+      return total;
+    }, total);
+    if (total===0.0){
+      return total;
+    } else{
+    return `${total.toFixed(2)} kgCO₂e`; 
+    }
   };
 
-  // Handle user input changes
   const handleInputChange = (fuelType, field, value) => {
     setEmissionData((prev) => ({
       ...prev,
@@ -105,10 +144,35 @@ const MobileCombustion = () => {
       },
     }));
   };
+  const saveData = async () => {
+    const storedData = selectedFuels.map((fuelType) => ({
+      fuelType,
+      dataAvailable: emissionData[fuelType]?.dataAvailable || "",
+      uom: emissionData[fuelType]?.uom || "",
+      value: emissionData[fuelType]?.value || 0,
+      actualEstimated: emissionData[fuelType]?.actualEstimated || "",
+      attachment: emissionData[fuelType]?.attachment ? emissionData[fuelType]?.attachment.name : "",
+      emissionFactor: emissionData[fuelType]?.emissionFactor || "",
+      emissionFactorUOM: emissionData[fuelType]?.emission_factor_UOM || "",
+      emissions: calculateEmissions(fuelType)
+    }));
+    
+    storedData.push({company:localStorage.getItem("company")});
+    storedData.push({scopetype:"MobileCombustion"});
+
+    const response = await api.post("/api/emission-data", storedData);
+    if (response.status === 200) {
+      console.log("done");
+      
+    } else {
+      console.error("Unexpected response:", response);
+    }
+  
+  };
 
   return (
     <div className="fuel-selection-container">
-  <h1 className="fuel-selection-title">Fuel Selection</h1>
+  <h1 className="fuel-selection-title">Mobile Combustion</h1>
 
   {/* Add Custom Fuel Section */}
   <div className="custom-fuel-section">
@@ -141,6 +205,7 @@ const MobileCombustion = () => {
             <th>Actual/Estimated</th>
             <th>Attachment</th>
             <th>Emission Factor</th>
+            <th>Emission Factor UOM</th>
             <th>Emissions</th>
           </tr>
         </thead>
@@ -196,17 +261,24 @@ const MobileCombustion = () => {
                   />
                 </div>
               </td>
-              <td>{emissionData[fuelType]?.emissionFactor || "Fetching..."}</td>
+              <td>{emissionData[fuelType]?.emissionFactor !== undefined ? emissionData[fuelType]?.emissionFactor : "Fetching..."}</td>
+              <td>{emissionData[fuelType]?.emission_factor_UOM || "Fetching..."}</td>
               <td>{calculateEmissions(fuelType)}</td>
             </tr>
           ))}
+          <tr>
+                <td colSpan="8" style={{ textAlign: "right", fontWeight: "bold" }}>Total Emissions:</td>
+                <td style={{ fontWeight: "bold" }}>{totalEmissions()}</td>
+              </tr>
         </tbody>
       </table>
+      <button className="save-button" onClick={saveData}>Save Data</button>
     </div>
   )}
 
   {/* Fuel Selection Table */}
   <div className="fuel-selection-table-section">
+  <ReactMarkdown>{description}</ReactMarkdown>
     <table className="fuel-selection-table">
       <thead>
         <tr>
