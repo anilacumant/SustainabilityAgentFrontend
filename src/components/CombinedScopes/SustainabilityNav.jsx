@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import FuelSelection from '../Page3/StationaryCombustion/FuelSelection';
 import FugitiveSelection from '../Page3/FugitiveEmissions/FugitiveSelection';
 import Scope2Selection from '../Page3/Scope2/Scope2Selection';
@@ -12,11 +11,11 @@ const SustainabilityNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const selectedScopes = location.state?.selectedScopes || {};
-   
+  
   const [activeComponent, setActiveComponent] = useState(null);
   const [showChat, setShowChat] = useState(false);
-  const [scope1Expanded, setScope1Expanded] = useState(false);
- 
+  const [scope1Expanded, setScope1Expanded] = useState(true);
+
   const enabledComponents = {
     fuel: selectedScopes.stationary === 'Yes',
     fugitive: selectedScopes.fugitive === 'Yes',
@@ -25,13 +24,25 @@ const SustainabilityNav = () => {
   };
 
   const anyScope1Enabled = enabledComponents.fuel || enabledComponents.fugitive || enabledComponents.mobile;
-  
   const enabledCount = Object.values(enabledComponents).filter(Boolean).length;
 
   const toggleScope1 = () => {
     setScope1Expanded(!scope1Expanded);
   };
 
+  useEffect(() => {
+    if (activeComponent === null) {
+      if (enabledComponents.fuel) {
+        setActiveComponent('fuel');
+      } else if (enabledComponents.mobile) {
+        setActiveComponent('mobile');
+      } else if (enabledComponents.fugitive) {
+        setActiveComponent('fugitive');
+      } else if (enabledComponents.scope2) {
+        setActiveComponent('scope2');
+      }
+    }
+  }, [selectedScopes]); 
   return (
     <div className="sustainability-container">
       <nav className="sustainability-nav">
